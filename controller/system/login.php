@@ -73,7 +73,11 @@ if ($session->user_isConnected) {
 
 					$idToken = $token->getId();
 
-					RememberMe::CreateCookie($cookieName, $token->getId(), $tokenKey);
+					$result = RememberMe::CreateCookie($cookieName, $token->getId(), $tokenKey);
+
+					if (!$result) {
+						$errorHtml = "Impossible de sauvegarder le cookie de session.";
+					}
 				}
 
 				saveUserInSession($user, $idToken);
