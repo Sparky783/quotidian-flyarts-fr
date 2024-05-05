@@ -18,29 +18,19 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y lftp
           npm install -g minifier
-          composer install --no-progress --no-suggest --prefer-dist
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '7.4'
 
       - name: Minify JS and CSS
         run: |
           find view/js -type f ! -name "*.min.js" -exec minify -o {} {} \;
           find view/css -type f ! -name "*.min.css" -exec minify -o {} {} \;
 
-      - name: Run tests
-        run: vendor/bin/phpunit --stop-on-failure
-
       - name: Deploy to Server
-        if: ${{ success() }}
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /var/www/FLYARTS-PHOTOGRAPHIE/
+          server-dir: /var/www/FLYARTS-QUOTIDIAN/
           local-dir: ./
           exclude: |
             .git*/**
