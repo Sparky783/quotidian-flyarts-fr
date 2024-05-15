@@ -1,0 +1,112 @@
+<div class="container">
+    <div class="row">
+        <div id="title" class="col-md-12">
+            <h1 class="text-center">Espace profil</h1>
+        </div>
+        <section class="col-md-6 offset-md-3">
+            <div class="card border-primary">
+                <div id="entete" class="card-header bg-primary text-white text-center">
+                    {{ user?.name }}
+                </div>
+                <div id="profil" class="card-body">
+                    @if(success) {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ success }}
+                        </div>
+                    }
+                    @if(error) {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ error }}
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 mb-3">
+                        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseUpdateInfos" aria-expanded="false"
+                            aria-controls="collapseUpdateInfos">
+                            Modifier vos infos
+                        </button>
+
+                        <div class="collapse" id="collapseUpdateInfos" data-bs-parent="#profil">
+                            <form class="card card-body border-info"[formGroup]="editInfosForm"
+                            (submit)="onEditInfosSubmit()">
+                                <div class="form-group mb-3">
+                                    <label for="nameInput">Nom</label>
+                                    <input id="nameInput" class="form-control" type="text" formControlName="name"
+                                        [ngClass]="{'is-invalid': infosSubmitted && editInfosForm.controls['name'].errors}" />
+
+                                    @if(infosSubmitted && editInfosForm.controls['name'].errors) {
+                                        <div class="invalid-feedback">
+                                            <div>Un nom est requis</div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="text-end">
+                                    <button class="accepteButton btn btn-info float-right"
+                                        type="submit">Modifier</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseUpdatePassword" aria-expanded="false"
+                            aria-controls="collapseUpdatePassword">
+                            Modifier votre mot de passe
+                        </button>
+
+                        <div class="collapse" id="collapseUpdatePassword" data-bs-parent="#profil">
+                            <form class="card card-body border-info" [formGroup]="editPasswordForm"
+                                (submit)="onEditPasswordSubmit()">
+                                <div class="form-group mb-3">
+                                    <label for="oldPassword">Ancien mot de passe</label>
+                                    <input id="oldPassword" class="form-control" type="password" formControlName="oldPassword"
+                                        [ngClass]="{'is-invalid': passwordSubmitted && editPasswordForm.controls['oldPassword'].errors}">
+
+                                    @if(passwordSubmitted && editPasswordForm.controls['oldPassword'].errors) {
+                                        <div class="invalid-feedback">
+                                            <div>Veuillez fournir l'ancien mot de passe</div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="newPassword">Nouveau mot de passe</label>
+                                    <input id="newPassword" class="form-control" type="password" formControlName="newPassword"
+                                        [ngClass]="{'is-invalid': passwordSubmitted && editPasswordForm.controls['newPassword'].errors}">
+
+                                    @if(passwordSubmitted && editPasswordForm.controls['newPassword'].errors) {
+                                        <div class="invalid-feedback">
+                                            <div>Un mot de passe est nécessaire</div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label for="confirmPassword">Confirmation du mot de passe</label>
+                                    <input id="confirmPassword" class="form-control" type="password" formControlName="confirmPassword"
+                                        [ngClass]="{'is-invalid': passwordSubmitted && editPasswordForm.controls['confirmPassword'].errors}">
+
+                                    @if(passwordSubmitted && editPasswordForm.controls['confirmPassword'].errors) {
+                                        <div class="invalid-feedback">
+                                            <div>Veuillez confirmer le mot de passe</div>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="text-end">
+                                    <button class="accepteButton btn btn-info float-right"
+                                        type="submit">Modifier</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a class="btn btn-danger btn-lg btn-block" (click)="clickLogout()">Se déconnecter</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
