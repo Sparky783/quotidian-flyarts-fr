@@ -136,7 +136,7 @@ export const fakeBackendInterceptor: HttpInterceptorFn = (req, next) => {
 
     function getSites() {
         if (!isLoggedIn()) {
-            console.log("NOt connected");
+            console.log("Not connected");
             return unauthorized();
         }
         

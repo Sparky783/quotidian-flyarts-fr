@@ -58,7 +58,7 @@ export class LoginComponent {
         this.accountService.login(this.form.value.email, this.form.value.password)
             .pipe(first())
             .subscribe({
-                next: (user) => {
+                next: () => {
                     // Get return url from query parameters or default to home page
                     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
                     this.router.navigateByUrl(returnUrl);

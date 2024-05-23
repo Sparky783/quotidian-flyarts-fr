@@ -10,7 +10,7 @@ export class SiteService {
     private http: HttpClient = inject(HttpClient);
 
     getSites(userId: number) {
-        return this.http.get<Site[]>(`${environment.apiUrl}/sites/${userId}`);
+        return this.http.get<Site[]>(`${environment.apiUrl}/sites`, { withCredentials: true });
     }
 
     openSite(siteId: number) {

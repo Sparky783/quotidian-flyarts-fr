@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { User } from '../_interfaces/user';
@@ -24,13 +24,15 @@ export class AccountService {
     }
 
     login(email: string, password: string) {
-        return this.http.post<User>(`${environment.apiUrl}/users/login`, { email, password })
-            .pipe(map(user => {
-                // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
-                localStorage.setItem('user', JSON.stringify(user));
-                this.userSubject.next(user);
-                return user;
-            }));
+        return this.http.post<User>(`${environment.apiUrl}/users/login`, { email, password }, { withCredentials: true })
+            .pipe(
+                map(user => {
+                    // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
+                    localStorage.setItem('user', JSON.stringify(user));
+                    this.userSubject.next(user);
+                    return user;
+                })
+            );
     }
 
     logout() {
