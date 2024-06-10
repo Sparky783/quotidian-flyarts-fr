@@ -1,8 +1,8 @@
 import { Frequency } from "../_helpers/frequency";
 
 export interface Site {
-	id: number,
-    userId: number,
+	idSite: number,
+    idUser: number,
     name: string,
     url: string,
 	frequency: Frequency,

@@ -39,7 +39,7 @@ export class HomeComponent {
     }
 
     ngOnInit() {
-        this.siteService.getSites(this.user?.id ?? -1)
+        this.siteService.getSites(this.user?.idUser ?? -1)
             .pipe(first())
             .subscribe((sites) => {
                 this.sites = sites;
@@ -48,7 +48,7 @@ export class HomeComponent {
     }
 
     openSite(site: Site) {
-        this.siteService.openSite(site.id)
+        this.siteService.openSite(site.idSite)
             .pipe(first())
             .subscribe(() => {
                 window.open(site.url);

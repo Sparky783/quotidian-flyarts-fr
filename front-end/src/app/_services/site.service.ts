@@ -10,22 +10,22 @@ export class SiteService {
     private http: HttpClient = inject(HttpClient);
 
     getSites(userId: number) {
-        return this.http.get<Site[]>(`${environment.apiUrl}/sites`, { withCredentials: true });
+        return this.http.get<Site[]>(`${environment.apiUrl}/sites/` + userId, { withCredentials: true });
     }
 
     openSite(siteId: number) {
-        return this.http.post<Site[]>(`${environment.apiUrl}/sites/open`, siteId);
+        return this.http.get<Site[]>(`${environment.apiUrl}/sites/open/` + siteId, { withCredentials: true });
     }
 
     add(site: Site) {
-        return this.http.post<Site[]>(`${environment.apiUrl}/sites`, site);
+        return this.http.post<Site[]>(`${environment.apiUrl}/sites`, site, { withCredentials: true });
     }
 
     update(site: Site) {
-        return this.http.put<Site[]>(`${environment.apiUrl}/sites`, site);
+        return this.http.put<Site[]>(`${environment.apiUrl}/sites/` + site.idSite, site, { withCredentials: true });
     }
 
     delete(siteId: number) {
-        return this.http.delete(`${environment.apiUrl}/sites/${siteId}`);
+        return this.http.delete(`${environment.apiUrl}/sites/${siteId}`, { withCredentials: true });
     }
 }

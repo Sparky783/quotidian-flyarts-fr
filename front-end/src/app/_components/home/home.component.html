@@ -41,9 +41,9 @@
                 <table class="card-body table table-hover">
                     <tbody>
                         @if(sites.length > 0) {
-                            @for(site of sites; track site.id) {
+                            @for(site of sites; track site.idSite) {
                                 @if(!hasFilter || site.frequency == filterFrequency) {
-                                    <tr class="q-link row-{{site.frequency | frequencyPipe }}" data-id='{{site.id}}' data-link=''
+                                    <tr class="q-link row-{{site.frequency | frequencyPipe }}" data-id='{{site.idSite}}' data-link=''
                                         data-frequency='' (click)="openSite(site)">
                                         <td class='type-column'><i
                                                 class='fas fa-circle dot-{{site.frequency | frequencyPipe }}'></i></td>

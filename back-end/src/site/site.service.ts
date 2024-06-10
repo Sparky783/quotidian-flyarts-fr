@@ -1,26 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSiteDto } from './dto/create-site.dto';
 import { UpdateSiteDto } from './dto/update-site.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Site } from './entities/site.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class SiteService {
-  create(createSiteDto: CreateSiteDto) {
-    return 'This action adds a new site';
-  }
+    constructor(
+        @InjectRepository(Site)
+        private sitesRepository: Repository<Site>,
+    ) { }
 
-  findAll(idUser: number) {
-    return `This action returns all site of #${idUser} user`;
-  }
+    create(idUser: number, createSiteDto: CreateSiteDto) {
+        // This action adds a new site
+        const site = new Site();
+        site.idUser = idUser;
+        site.name = createSiteDto.name;
+        site.url = createSiteDto.url;
+        site.frequency = createSiteDto.frequency;
+        site.nextDate = createSiteDto.nextDate;
+        site.lastVisit = createSiteDto.lastVisit;
 
-  findOne(id: number) {
-    return `This action returns a #${id} site`;
-  }
+        return this.sitesRepository.save(site);
+    }
 
-  update(id: number, updateSiteDto: UpdateSiteDto) {
-    return `This action updates a #${id} site`;
-  }
+    findAll(idUser: number) {
+        // This action returns all site of #${idUser} user
+        return this.sitesRepository.find({
+            where: {
+                idUser: idUser,
+            }
+        });
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} site`;
-  }
+    findOne(id: number) {
+        // This action returns a #${id} site
+        return this.sitesRepository.find({
+            where: {
+                idSite: id,
+            }
+        });
+    }
+
+    update(id: number, updateSiteDto: UpdateSiteDto) {
+        // This action updates a #${id} site
+        return this.sitesRepository.update(id, updateSiteDto);
+    }
+
+    remove(idSite: number, idUser: number) {
+        // This action removes a #${id} site
+        
+        return this.sitesRepository.delete(idSite);
+    }
 }

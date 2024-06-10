@@ -38,7 +38,7 @@ export class SiteManagerComponent {
     public user?: User | null;
     public sites: Site[] = [];
     public selectedSite?: Site | null;
-    public frequencyList = Object.values(Frequency).filter(value => typeof value === 'number');
+    public frequencyList = Object.values(Frequency);
     public editSiteFormTitle: string = "";
     public editSiteFormButton: string = "";
     public isEditAction: boolean = false; // False = Ajout, True = Edition
@@ -59,7 +59,7 @@ export class SiteManagerComponent {
             nextDate: ['', Validators.required]
         });
 
-        this.siteService.getSites(this.user?.id ?? -1)
+        this.siteService.getSites(this.user?.idUser ?? -1)
             .pipe(first())
             .subscribe((sites) => {
                 this.sites = sites;
@@ -107,7 +107,7 @@ export class SiteManagerComponent {
 
             this.selectedSite.name = this.editSiteForm.value.name;
             this.selectedSite.url = this.editSiteForm.value.url;
-            this.selectedSite.frequency = +this.editSiteForm.value.frequency; // '+' convert string to number
+            this.selectedSite.frequency = this.editSiteForm.value.frequency;
             this.selectedSite.nextDate = new Date(this.editSiteForm.value.nextDate);
 
             this.siteService.update(this.selectedSite)
@@ -117,10 +117,10 @@ export class SiteManagerComponent {
                     modal.close();
                 });
         } else {
-            this.selectedSite = { userId: this.user?.id } as Site;
+            this.selectedSite = { idUser: this.user?.idUser } as Site;
             this.selectedSite.name = this.editSiteForm.value.name;
             this.selectedSite.url = this.editSiteForm.value.url;
-            this.selectedSite.frequency = +this.editSiteForm.value.frequency; // '+' convert string to number
+            this.selectedSite.frequency = this.editSiteForm.value.frequency;
             this.selectedSite.nextDate = new Date(this.editSiteForm.value.nextDate);
             this.selectedSite.lastVisit = new Date();
             this.selectedSite.toVisit = false;
@@ -139,10 +139,10 @@ export class SiteManagerComponent {
             return;
 
         let site = this.selectedSite;
-        this.siteService.delete(site.id)
+        this.siteService.delete(site.idSite)
             .pipe(first())
             .subscribe(() => {
-                this.sites = this.sites.filter(s => s.id !== site.id);
+                this.sites = this.sites.filter(s => s.idSite !== site.idSite);
                 modal.close();
             });
     }

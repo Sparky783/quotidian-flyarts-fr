@@ -55,7 +55,7 @@ export class ProfileComponent {
             return;
         }
 
-        this.accountService.editInfos(this.user?.id as number, this.editInfosForm.value.name)
+        this.accountService.editInfos(this.user?.idUser as number, this.editInfosForm.value.name)
             .pipe(first())
             .subscribe({
                 next: user => {
@@ -78,7 +78,7 @@ export class ProfileComponent {
             return;
         }
 
-        this.accountService.editPassword(this.user?.id as number, this.editPasswordForm.value.oldPassword, this.editPasswordForm.value.newPassword, this.editPasswordForm.value.confirmPassword)
+        this.accountService.editPassword(this.user?.idUser as number, this.editPasswordForm.value.oldPassword, this.editPasswordForm.value.newPassword, this.editPasswordForm.value.confirmPassword)
             .pipe(first())
             .subscribe({
                 next: user => {

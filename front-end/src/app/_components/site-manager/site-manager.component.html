@@ -18,7 +18,7 @@
                     </thead>
                     <tbody>
                         @if(sites.length > 0) {
-                            @for(site of sites; track site.id) {
+                            @for(site of sites; track site.idSite) {
                                 <tr>
                                     <td class='title-column'>{{ site.name }}</td>
                                     <td class='type-column'>{{site.frequency | frequencyPipe : false }}</td>

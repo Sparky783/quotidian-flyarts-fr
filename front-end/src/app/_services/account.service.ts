@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
 import { User } from '../_interfaces/user';
@@ -43,7 +43,7 @@ export class AccountService {
     }
 
     editInfos(id: number, name: string) {
-        return this.http.post<User>(`${environment.apiUrl}/users/infos/${id}`, name)
+        return this.http.post<User>(`${environment.apiUrl}/users/infos/${id}`, name, { withCredentials: true })
             .pipe(map(user => {
                 // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
                 localStorage.setItem('user', JSON.stringify(user));
@@ -57,7 +57,7 @@ export class AccountService {
             oldPassword: oldPassword,
             newPassword: newPassword,
             confirmPassword: confirmPassword
-        })
+        }, { withCredentials: true })
             .pipe(map(user => {
                 // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
                 localStorage.setItem('user', JSON.stringify(user));
@@ -67,22 +67,22 @@ export class AccountService {
     }
 
     addUser(user: User) {
-        return this.http.post(`${environment.apiUrl}/users/password`, user);
+        return this.http.post(`${environment.apiUrl}/users/password`, user, { withCredentials: true });
     }
 
     getAll() {
-        return this.http.get<User[]>(`${environment.apiUrl}/users`);
+        return this.http.get<User[]>(`${environment.apiUrl}/users`, { withCredentials: true });
     }
 
     getById(id: string) {
-        return this.http.get<User>(`${environment.apiUrl}/users/${id}`);
+        return this.http.get<User>(`${environment.apiUrl}/users/${id}`, { withCredentials: true });
     }
 
     update(id: number, params: any) {
-        return this.http.put(`${environment.apiUrl}/users/${id}`, params)
+        return this.http.put(`${environment.apiUrl}/users/${id}`, params, { withCredentials: true })
             .pipe(map(x => {
                 // Update stored user if the logged in user updated their own record
-                if (id == this.getUserValue()?.id) {
+                if (id == this.getUserValue()?.idUser) {
                     // Update local storage
                     const user = { ...this.getUserValue(), ...params };
                     localStorage.setItem('user', JSON.stringify(user));
@@ -95,10 +95,10 @@ export class AccountService {
     }
 
     delete(id: number) {
-        return this.http.delete(`${environment.apiUrl}/users/${id}`)
+        return this.http.delete(`${environment.apiUrl}/users/${id}`, { withCredentials: true })
             .pipe(map(x => {
                 // Auto logout if the logged in user deleted their own record
-                if (id == this.getUserValue()?.id) {
+                if (id == this.getUserValue()?.idUser) {
                     this.logout();
                 }
                 return x;

@@ -152,13 +152,13 @@ export const fakeBackendInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         let site = body as Site;
-        site.id = sites.length ? Math.max(...sites.map(s => s.id)) + 1 : 1;
+        site.idSite = sites.length ? Math.max(...sites.map(s => s.id)) + 1 : 1;
 
         // update and save user
         sites.push(site);
         localStorage.setItem(sitesKey, JSON.stringify(sites));
 
-        let userSites = sites.filter(s => s.userId === site.userId);
+        let userSites = sites.filter(s => s.idUser === site.idUser);
 
         return ok(userSites.map(s => s as Site));
     }
@@ -169,13 +169,13 @@ export const fakeBackendInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         let params = body as Site;
-        let site = sites.find(s => s.id === params.id);
+        let site = sites.find(s => s.id === params.idSite);
 
         // update and save user
         Object.assign(site, params);
         localStorage.setItem(sitesKey, JSON.stringify(sites));
 
-        let userSites = sites.filter(s => s.userId === site.userId);
+        let userSites = sites.filter(s => s.idUser === site.idUser);
 
         return ok(userSites.map(s => s as Site));
     }
