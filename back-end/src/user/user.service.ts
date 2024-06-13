@@ -27,7 +27,7 @@ export class UserService {
         // This action returns a #${id} user
         return this.usersRepository.findOne({
             where: {
-                idUser: idUser,
+                idUser: idUser
             }
         });
     }
@@ -35,7 +35,7 @@ export class UserService {
     findByEmail(userEmail: string): Promise<User[]> {
         return this.usersRepository.find({
             where: {
-                email: userEmail,
+                email: userEmail
             }
         });
     }

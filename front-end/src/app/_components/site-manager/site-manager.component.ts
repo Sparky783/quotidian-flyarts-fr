@@ -28,7 +28,7 @@ import { Frequency } from '../../_helpers/frequency';
 })
 export class SiteManagerComponent {
     private formBuilder: FormBuilder = inject(FormBuilder);
-    private modalService: NgbModal = inject(NgbModal);
+    private bootstrapModal: NgbModal = inject(NgbModal);
     private accountService: AccountService = inject(AccountService);
     private siteService: SiteService = inject(SiteService);
     private datePipe: DatePipe = inject(DatePipe);
@@ -66,6 +66,10 @@ export class SiteManagerComponent {
             });
     }
 
+    ngOnDestroy() {
+        this.bootstrapModal.dismissAll();
+    }
+
     openSiteModal(site: Site | null, modal: any) {
         this.submitted = false;
 
@@ -89,7 +93,7 @@ export class SiteManagerComponent {
             this.editSiteForm.reset();
         }
 
-        this.modalService.open(modal);
+        this.bootstrapModal.open(modal);
     }
 
     onEditSite(modal: any) {
