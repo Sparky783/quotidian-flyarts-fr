@@ -39,6 +39,10 @@ export class HomeComponent {
     }
 
     ngOnInit() {
+        this.refresh();
+    }
+
+    refresh() {
         this.siteService.getSites(this.user?.idUser ?? -1)
             .pipe(first())
             .subscribe((sites) => {
@@ -52,6 +56,7 @@ export class HomeComponent {
             .pipe(first())
             .subscribe(() => {
                 window.open(site.url);
+                this.refresh();
             });
     }
 

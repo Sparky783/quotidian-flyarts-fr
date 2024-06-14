@@ -19,8 +19,8 @@ export class SiteService {
         site.name = createSiteDto.name;
         site.url = createSiteDto.url;
         site.frequency = createSiteDto.frequency;
-        site.nextDate = createSiteDto.nextDate;
-        site.lastVisit = createSiteDto.lastVisit;
+        site.nextDate = new Date(createSiteDto.nextDate);
+        site.lastVisit = new Date(createSiteDto.lastVisit);
 
         return this.sitesRepository.save(site);
     }
@@ -34,13 +34,15 @@ export class SiteService {
         });
     }
 
-    findOne(id: number) {
+    async findOne(id: number) {
         // This action returns a #${id} site
-        return this.sitesRepository.find({
+        let sites = await this.sitesRepository.find({
             where: {
                 idSite: id,
             }
         });
+
+        return sites[0];
     }
 
     update(id: number, updateSiteDto: UpdateSiteDto) {
@@ -52,5 +54,42 @@ export class SiteService {
         // This action removes a #${id} site
         
         return this.sitesRepository.delete(idSite);
+    }
+
+    async open(id: number) {
+        // This action returns a #${id} site
+        let site = await this.findOne(id);
+        let today = new Date();
+        let nextDate = new Date(site.nextDate);
+
+        if(!nextDate) {
+            console.log("Error");
+            return;
+        }
+
+		while (nextDate < today) {
+            switch(site.frequency) {
+                case "daily":
+                    nextDate.setDate(nextDate.getDate() + 1);
+                    break;
+                    
+                case "weekly":
+                    nextDate.setDate(nextDate.getDate() + 7);
+                    break;
+                    
+                case "monthly":
+                    nextDate.setMonth(nextDate.getMonth() + 1);
+                    break;
+                    
+                case "yearly":
+                    nextDate.setFullYear(nextDate.getFullYear() + 1);
+                    break;
+            }
+        }
+
+        this.sitesRepository.update(id, {
+            nextDate: nextDate,
+            lastVisit: today
+        });
     }
 }

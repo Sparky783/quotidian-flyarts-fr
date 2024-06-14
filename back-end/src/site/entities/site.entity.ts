@@ -18,11 +18,11 @@ export class Site {
     @Column()
     frequency: string;
     
-    @Column({ name: "next_date" })
-    nextDate: string;
+    @Column({ type: "date", name: "next_date" })
+    nextDate: Date;
     
-    @Column({ name: "last_visit" })
-    lastVisit: string;
+    @Column({ type: "datetime", name: "last_visit" })
+    lastVisit: Date;
 
     @OneToOne(type => User, user => user.idUser)
     user: User;

@@ -50,8 +50,8 @@ export class SiteController {
             return response.status(401).json({ message: 'You need to be logged in.' });
         }
 
-        const result = await this.siteService.findOne(+id);
-        return response.json(result);
+        await this.siteService.open(id);
+        return response.json(true);
     }
 
     @Put(':id')
