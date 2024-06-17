@@ -1,1 +1,112 @@
-<p>users works!</p>
+<div class="container">
+    <div class="row">
+        <section class="col-md-12">
+            <h1>Gestion des Users</h1>
+            <div class="card">
+                <div class="card-header clearfix">
+                    <span class="float-left">Il y a {{ users.length }} utilisateurs</span>
+                    <button class="btn btn-primary float-right" type="button" (click)="openUserModal(null, editUserModal)"><i class="fas fa-plus-circle"></i> Ajouter un utilisateur</button>
+                </div>
+                <table id="tableUsers" class="card-body table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">E-mail</th>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Status</th>
+                            <th class="text-right" scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(users.length > 0) {
+                            @for(user of users; track user.idUser) {
+                                <tr>
+                                    <td class='title-column'>{{ user.email }}</td>
+                                    <td class='title-column'>{{ user.name }}</td>
+                                    <td class='title-column'>{{ user.status }}</td>
+                                    <td class='action-column'>
+                                        <button class='modify-user btn btn-secondary' (click)="openUserModal(user, editUserModal)"><i class='fas fa-pen'></i></button>
+                                        <button class='remove-user btn btn-danger' (click)="openUserModal(user, removeUserModal)"><i class='fas fa-trash-alt'></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        } @else {
+                            <tr>
+                                <td>Aucun utilisateur n'est enregistré.</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end">
+                                    <button class="btn btn-primary" type="button" (click)="openUserModal(null, editUserModal)"><i class="fas fa-plus-circle"></i> Ajouter un user</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #editUserModal let-modal>
+    <form id="editUserForm" [formGroup]="editUserForm" (submit)="onEditUser(modal)">
+        <div class="modal-header">
+            <h5 id="editModalTitle" class="modal-title">{{ editUserFormTitle }}</h5>
+            <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="name">E-mail</label>
+                <input id="emailInput" class="form-control" type="text" formControlName="email"
+                    [ngClass]="{'is-invalid': submitted && editUserForm.controls['email'].errors}">
+                
+                @if(submitted && editUserForm.controls['email'].errors) {
+                    <div class="invalid-feedback">
+                        @if(editUserForm.controls['email'].errors['required']) {
+                            <div>L'e-mail de l'utilisateur est requis</div>
+                        }
+
+                        @if(editUserForm.controls['email'].errors['email']) {
+                            <div>Le format n'est pas correct</div>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input id="nameInput" class="form-control" type="text" formControlName="name"
+                    [ngClass]="{'is-invalid': submitted && editUserForm.controls['name'].errors}">
+
+                @if(submitted && editUserForm.controls['name'].errors) {
+                    <div class="invalid-feedback">
+                        <div>Le nom de l'utilisateur est requis</div>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label for="name">Status</label>
+                <input id="statusInput" class="form-control" type="text" formControlName="status"
+                    [ngClass]="{'is-invalid': submitted && editUserForm.controls['status'].errors}">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close()">Annuler</button>
+            <button id="acceptEditButton" class="btn btn-primary" type="submit">{{ editUserFormButton }}</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #removeUserModal let-modal>
+    <div id="removeUserModal">
+        <div class="modal-header">
+            <h5 class="modal-title" id="removeModalTitle">Supprimer un User</h5>
+            <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Voulez-vous vraiment supprimer l'utilisateur {{ selectedUser?.name }} ?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close()">Non</button>
+            <button class="btn btn-primary" (click)="removeUser(modal)">Oui</button>
+        </div>
+    </div>
+</ng-template>

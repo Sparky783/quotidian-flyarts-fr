@@ -27,6 +27,9 @@ export class AccountService {
         return this.http.post<User>(`${environment.apiUrl}/users/login`, { email, password }, { withCredentials: true })
             .pipe(
                 map(user => {
+                    user.isAdmin = user.status === "admin";
+                    console.log(user);
+
                     // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
                     localStorage.setItem('user', JSON.stringify(user));
                     this.userSubject.next(user);
@@ -67,7 +70,7 @@ export class AccountService {
     }
 
     addUser(user: User) {
-        return this.http.post(`${environment.apiUrl}/users/password`, user, { withCredentials: true });
+        return this.http.post<User[]>(`${environment.apiUrl}/users`, user, { withCredentials: true });
     }
 
     getAll() {
@@ -78,18 +81,19 @@ export class AccountService {
         return this.http.get<User>(`${environment.apiUrl}/users/${id}`, { withCredentials: true });
     }
 
-    update(id: number, params: any) {
-        return this.http.put(`${environment.apiUrl}/users/${id}`, params, { withCredentials: true })
+    update(user: User) {
+        return this.http.put<User[]>(`${environment.apiUrl}/users/${user.idUser}`, user, { withCredentials: true })
             .pipe(map(x => {
                 // Update stored user if the logged in user updated their own record
-                if (id == this.getUserValue()?.idUser) {
+                if (user.idUser === this.getUserValue()?.idUser) {
                     // Update local storage
-                    const user = { ...this.getUserValue(), ...params };
-                    localStorage.setItem('user', JSON.stringify(user));
+                    const userData = { ...this.getUserValue(), ...user };
+                    localStorage.setItem('user', JSON.stringify(userData));
 
                     // Publish updated user to subscribers
-                    this.userSubject.next(user);
+                    this.userSubject.next(userData);
                 }
+                
                 return x;
             }));
     }

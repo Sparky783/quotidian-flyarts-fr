@@ -4,7 +4,6 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UserService {
@@ -15,7 +14,13 @@ export class UserService {
 
     create(createUserDto: CreateUserDto) {
         // This action adds a new user
-        return this.usersRepository.create(createUserDto); // Type is maybe User instead of CreateUserDto;
+        const user = new User();
+        user.email = createUserDto.email;
+        user.password = createUserDto.password;
+        user.name = createUserDto.name;
+        user.status = createUserDto.status;
+
+        return this.usersRepository.save(user); // Type is maybe User instead of CreateUserDto;
     }
 
     findAll() {
@@ -45,7 +50,7 @@ export class UserService {
         return this.usersRepository.update(id, updateUserDto); 
     }
 
-    async remove(id: number): Promise<void> {
+    async remove(id: number) {
         // This action removes a #${id} user
         await this.usersRepository.delete(id);
     }

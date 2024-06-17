@@ -31,7 +31,7 @@ export const routes: Routes = [
         component: SiteManagerComponent
     },
     {
-        path: 'admin',
+        path: 'admin/users',
         title: 'Admin user manager',
         canActivate: [authGuard, adminAuthGuard],
         loadComponent: () => import('./admin/_components/users/users.component').then(m => m.UsersComponent)

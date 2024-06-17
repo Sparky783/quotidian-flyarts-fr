@@ -50,9 +50,8 @@ export class SiteService {
         return this.sitesRepository.update(id, updateSiteDto);
     }
 
-    remove(idSite: number, idUser: number) {
+    remove(idSite: number) {
         // This action removes a #${id} site
-        
         return this.sitesRepository.delete(idSite);
     }
 

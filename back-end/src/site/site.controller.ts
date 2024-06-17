@@ -81,7 +81,13 @@ export class SiteController {
             return response.status(401).json({ message: 'You need to be logged in.' });
         }
 
-        const result = await this.siteService.remove(+id, request.session['user'].idUser);
+        let idUser = request.session['user'].idUser;
+        let site = await this.siteService.findOne(id);
+
+        if(site.idUser !== idUser)
+            return response.json(false);
+
+        const result = await this.siteService.remove(+id);
         return response.json(result);
     }
 }

@@ -21,6 +21,11 @@
                         <li class="nav-item">
                             <a class="nav-link" [routerLink]="['/profile']">Profil</a>
                         </li>
+                        @if(user.isAdmin) {
+                            <li class="nav-item">
+                                <a class="nav-link" [routerLink]="['/admin/users']">Espace Admin</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             }
@@ -33,7 +38,8 @@
 </main>
 
 <footer class="container">
-	<p id="footer_copyright" class="text-center">
-		Copyright &copy; {{ date | date:'yyyy' }} {{title}}. Tous droits réservés - Développeur et Webmaster: Florent LAVIGNOTTE
-	</p>
+    <p id="footer_copyright" class="text-center">
+        Copyright &copy; {{ date | date:'yyyy' }} {{title}}. Tous droits réservés - Développeur et Webmaster: Florent
+        LAVIGNOTTE
+    </p>
 </footer>
