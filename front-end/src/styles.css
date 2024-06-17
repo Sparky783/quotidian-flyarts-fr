@@ -1,0 +1,9 @@
+.row+.row {
+    margin-top: 1rem;
+}
+
+footer {
+    margin-top: 50px;
+    font-style: italic;
+    font-size: 0.85rem;
+}
