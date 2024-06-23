@@ -1,11 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as session from 'express-session';
+import * as dotenv from 'dotenv';
+
+// Charger le fichier .env approprié en fonction de NODE_ENV
+const environment = process.env.NODE_ENV || 'development';
+dotenv.config({ path: `.env.${environment}` });
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     app.enableCors({
-        origin: 'http://localhost:4200',
+        origin: process.env.CORSORIGIN,
         credentials: true,
     });
 
@@ -20,13 +25,8 @@ async function bootstrap() {
         }
     };
     
-    // if (app.get('env') === 'production') {
-    //     app.set('trust proxy', 1) // trust first proxy
-    //     sess.cookie.secure = true // serve secure cookies
-    // }
-    
     app.use(session(sess));
     
-    await app.listen(3000);
+    await app.listen(process.env.PORT || 3000);
 }
 bootstrap();

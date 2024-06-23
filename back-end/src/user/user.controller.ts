@@ -167,6 +167,48 @@ export class UserController {
         }
     }
 
+    @Put('infos/:id')
+    async updateInfos(
+        @Req() request: Request,
+        @Res() response: Response,
+        @Param('id') id: string,
+        @Body() updateUserDto: UpdateUserDto
+    ) {
+        if (!request.session['user']) {
+            return response.status(401).json({ message: 'You need to be logged in.' });
+        }
+
+        if (+id !== request.session['user'].idUser) {
+            return response.status(403).json({ message: 'You cannot change information from another user.' });
+        }
+
+        await this.userService.update(+id, updateUserDto);
+
+        const result = await this.userService.findAll();
+        return response.json(result);
+    }
+
+    @Put('password/:id')
+    async updatePassword(
+        @Req() request: Request,
+        @Res() response: Response,
+        @Param('id') id: string,
+        @Body() updateUserDto: UpdateUserDto
+    ) {
+        if (!request.session['user']) {
+            return response.status(401).json({ message: 'You need to be logged in.' });
+        }
+
+        if (+id !== request.session['user'].idUser) {
+            return response.status(403).json({ message: 'You cannot change pasword from another user.' });
+        }
+
+        await this.userService.update(+id, updateUserDto);
+
+        const result = await this.userService.findAll();
+        return response.json(result);
+    }
+
     private isAdminUser(user: User): boolean {
         return user.status === "admin";
     }

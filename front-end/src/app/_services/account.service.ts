@@ -46,7 +46,7 @@ export class AccountService {
     }
 
     editInfos(id: number, name: string) {
-        return this.http.post<User>(`${environment.apiUrl}/users/infos/${id}`, name, { withCredentials: true })
+        return this.http.put<User>(`${environment.apiUrl}/users/infos/${id}`, name, { withCredentials: true })
             .pipe(map(user => {
                 // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
                 localStorage.setItem('user', JSON.stringify(user));
@@ -56,7 +56,7 @@ export class AccountService {
     }
 
     editPassword(id: number, oldPassword: string, newPassword: string, confirmPassword: string) {
-        return this.http.post<User>(`${environment.apiUrl}/users/password/${id}`, {
+        return this.http.put<User>(`${environment.apiUrl}/users/password/${id}`, {
             oldPassword: oldPassword,
             newPassword: newPassword,
             confirmPassword: confirmPassword
