@@ -51,7 +51,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    neesds: test
+    needs: test
 
     strategy:
       matrix:
