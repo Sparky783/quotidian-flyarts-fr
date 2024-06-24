@@ -1,0 +1,127 @@
+<div class="container">
+    <div class="row">
+        <section class="col-md-12">
+            <h1>Gestion des Sites</h1>
+            <div class="card">
+                <div class="card-header clearfix">
+                    <span class="float-left">Il y a {{ sites.length }} sites</span>
+                    <button class="btn btn-primary float-right" type="button" (click)="openSiteModal(null, editSiteModal)"><i class="fas fa-plus-circle"></i> Ajouter un site</button>
+                </div>
+                <table id="tableSites" class="card-body table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Fréquence</th>
+                            <th scope="col">Prochaine date</th>
+                            <th class="text-right" scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if(sites.length > 0) {
+                            @for(site of sites; track site.idSite) {
+                                <tr>
+                                    <td class='title-column'>{{ site.name }}</td>
+                                    <td class='type-column'>{{site.frequency | frequencyPipe : false }}</td>
+                                    <td class='date-column'>{{site.nextDate | date : "dd/MM/yyyy" }}</td>
+                                    <td class='action-column'>
+                                        <button class='modify-site btn btn-secondary' (click)="openSiteModal(site, editSiteModal)"><i class='fas fa-pen'></i></button>
+                                        <button class='remove-site btn btn-danger' (click)="openSiteModal(site, removeSiteModal)"><i class='fas fa-trash-alt'></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        } @else {
+                            <tr>
+                                <td>Aucun site n'est enregistré.</td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-end">
+                                    <button class="btn btn-primary" type="button" (click)="openSiteModal(null, editSiteModal)"><i class="fas fa-plus-circle"></i> Ajouter un site</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modals -->
+<ng-template #editSiteModal let-modal>
+    <form id="editSiteForm" [formGroup]="editSiteForm" (submit)="onEditSite(modal)">
+        <div class="modal-header">
+            <h5 id="editModalTitle" class="modal-title">{{ editSiteFormTitle }}</h5>
+            <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="name">Nom</label>
+                <input id="nameInput" class="form-control" type="text" formControlName="name"
+                    [ngClass]="{'is-invalid': submitted && editSiteForm.controls['name'].errors}">
+
+                @if(submitted && editSiteForm.controls['name'].errors) {
+                    <div class="invalid-feedback">
+                        <div>Le nom du site est requis</div>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label for="name">Lien URL</label>
+                <input id="urlInput" class="form-control" type="text" formControlName="url"
+                    [ngClass]="{'is-invalid': submitted && editSiteForm.controls['url'].errors}">
+                
+                @if(submitted && editSiteForm.controls['url'].errors) {
+                    <div class="invalid-feedback">
+                        <div>Le lien du site est requis</div>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label for="name">Fréquence</label>
+                <select id="frequencyInput" class="form-control" formControlName="frequency"
+                    [ngClass]="{'is-invalid': submitted && editSiteForm.controls['frequency'].errors}">
+                    @for(frequency of frequencyList; track frequency) {
+                        <option [value]="frequency">{{ frequency | frequencyPipe : false }}</option>
+                    }
+                </select>
+                
+                @if(submitted && editSiteForm.controls['frequency'].errors) {
+                    <div class="invalid-feedback">
+                        <div>Veuillez choisir une fréquence de consultation</div>
+                    </div>
+                }
+            </div>
+            <div class="form-group">
+                <label for="name">Prochaine date</label>
+                <input id="nextDateInput" class="form-control" type="date" formControlName="nextDate"
+                    [ngClass]="{'is-invalid': submitted && editSiteForm.controls['nextDate'].errors}">
+                
+                @if(submitted && editSiteForm.controls['nextDate'].errors) {
+                    <div class="invalid-feedback">
+                        <div>Veuillez choisir la prochaine date à laquel vous souhaitez être rappeler</div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close()">Annuler</button>
+            <button id="acceptEditButton" class="btn btn-primary" type="submit">{{ editSiteFormButton }}</button>
+        </div>
+    </form>
+</ng-template>
+
+<ng-template #removeSiteModal let-modal>
+    <div id="removeSiteModal">
+        <div class="modal-header">
+            <h5 class="modal-title" id="removeModalTitle">Supprimer un Site</h5>
+            <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            Voulez-vous vraiment supprimer le site {{ selectedSite?.name }} ?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="modal.close()">Non</button>
+            <button class="btn btn-primary" (click)="removeSite(modal)">Oui</button>
+        </div>
+    </div>
+</ng-template>

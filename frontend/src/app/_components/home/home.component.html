@@ -1,0 +1,74 @@
+<main class="container">
+    <section id="google">
+        <a href="https://google.fr">
+            <img src="assets/img/google_logo.png" alt="Logo de Google" />
+        </a>
+    </section>
+
+    <div class="row">
+        <section class="col-md-12">
+            <div id="topList" class="row">
+                <div class="col-md-4">
+                    <h3>Ma liste</h3>
+                </div>
+                <div class="col-md-8 text-end"><a class="btn btn-outline-secondary"
+                        [routerLink]="['/sites']">Modifier</a></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="btn-group" role="group" aria-label="filters">
+                        <button class="btn btn-outline-secondary filter" type="button" (click)="clearFilter()">
+                            Tous
+                        </button>
+                        <button class="btn btn-outline-primary filter" type="button" (click)="selectFilter('daily')">
+                            <i class="fas fa-circle"></i>
+                            <span class="filter-text">Quotidiens</span>
+                        </button>
+                        <button class="btn btn-outline-danger filter" type="button" (click)="selectFilter('weekly')">
+                            <i class="fas fa-circle"></i>
+                            <span class="filter-text">Hebdomadaires</span>
+                        </button>
+                        <button class="btn btn-outline-warning filter" type="button" (click)="selectFilter('monthly')">
+                            <i class="fas fa-circle"></i>
+                            <span class="filter-text">Mensuels</span>
+                        </button>
+                        <button class="btn btn-outline-success filter" type="button" (click)="selectFilter('yearly')">
+                            <i class="fas fa-circle"></i>
+                            <span class="filter-text">Annuels</span>
+                        </button>
+                    </div>
+                </div>
+                <table class="card-body table table-hover">
+                    <tbody>
+                        @if(sites.length > 0) {
+                            @for(site of sites; track site.idSite) {
+                                @if(!hasFilter || site.frequency == filterFrequency) {
+                                    <tr class="q-link row-{{site.frequency | frequencyPipe }}" data-id='{{site.idSite}}' data-link=''
+                                        data-frequency='' (click)="openSite(site)">
+                                        <td class='type-column'><i
+                                                class='fas fa-circle dot-{{site.frequency | frequencyPipe }}'></i></td>
+                                        <td class='title-column'>{{ site.name }}<br /><span class='last-visit'>Visité le {{
+                                                site.lastVisit | date: 'dd/MM/yyyy' }}</span></td>
+                                        <td class='is-check-column'>
+                                            @if(!site.toVisit) {
+                                                <i class='fas fa-check'></i>
+                                            }
+                                        </td>
+                                        <td class='external-column'><i class='fas fa-external-link-alt'></i></td>
+                                    </tr>
+                                }
+                            }
+                        } @else {
+                            <tr>
+                                <td>Aucun site n'est enregistré.</td>
+                                <td class="text-end">
+                                    <a class="btn btn-primary" [routerLink]="['/sites']">Ajouter un site</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
