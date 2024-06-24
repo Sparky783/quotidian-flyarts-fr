@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
@@ -37,7 +37,7 @@ jobs:
         run: |
           if [ "${{ matrix.service }}" == "angular" ]; then
             cd frontend
-            npm test
+            npm run test:ci
           else
             cd backend
             npm run test
@@ -58,7 +58,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
