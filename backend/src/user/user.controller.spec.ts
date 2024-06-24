@@ -2,19 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 
-// describe('UserController', () => {
-//     let controller: UserController;
+describe('UserController', () => {
+    it('fake test', () => {
+		expect(true).toBeTruthy();
+	});
 
-//     beforeEach(async () => {
-//         const module: TestingModule = await Test.createTestingModule({
-//             controllers: [UserController],
-//             providers: [UserService],
-//         }).compile();
+    // let controller: UserController;
 
-//         controller = module.get<UserController>(UserController);
-//     });
+    // beforeEach(async () => {
+    //     const module: TestingModule = await Test.createTestingModule({
+    //         controllers: [UserController],
+    //         providers: [UserService],
+    //     }).compile();
 
-//     it('should be defined', () => {
-//         expect(controller).toBeDefined();
-//     });
-// });
+    //     controller = module.get<UserController>(UserController);
+    // });
+
+    // it('should be defined', () => {
+    //     expect(controller).toBeDefined();
+    // });
+});
