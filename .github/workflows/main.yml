@@ -8,44 +8,50 @@ on:
     branches: [ "master" ]
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
 
-  #   strategy:
-  #     matrix:
-  #       service: [angular, nest]
+    strategy:
+      matrix:
+        service: [angular, nest]
 
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v2
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-  #     - name: Set up Node.js
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-  #     - name: Install dependencies
-  #       run: |
-  #         if [ "${{ matrix.service }}" == "angular" ]; then
-  #           cd frontend
-  #         else
-  #           cd backend
-  #         fi
-  #         npm install
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.service }}" == "angular" ]; then
+            cd frontend
+          else
+            cd backend
+          fi
+          npm install
 
-  #     - name: Run tests
-  #       run: |
-  #         if [ "${{ matrix.service }}" == "angular" ]; then
-  #           cd frontend
-  #           npm run test:ci
-  #         else
-  #           cd backend
-  #           npm run test
-  #         fi
+      - name: Install Chrome dependencies for CI
+        if: matrix.service == 'frontend'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libgconf-2-4
+
+      - name: Run tests
+        run: |
+          if [ "${{ matrix.service }}" == "angular" ]; then
+            cd frontend
+            npm run test:ci
+          else
+            cd backend
+            npm run test
+          fi
 
   build:
     runs-on: ubuntu-latest
-    # neesds: test
+    neesds: test
 
     strategy:
       matrix:
@@ -89,7 +95,7 @@ jobs:
 
       - name: Deploy Angular to FTP
         if: matrix.service == 'angular'
-        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
