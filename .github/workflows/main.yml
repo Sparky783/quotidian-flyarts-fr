@@ -94,23 +94,21 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Deploy Angular to FTP
-        if: matrix.service == 'angular'
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/FLYARTS-QUOTIDIAN/website/
+          server-dir: /public_html/FLYARTS-QUOTIDIAN/website/
           local-dir: frontend/dist/browser/
 
       - name: Deploy Nest.js to FTP
-        if: matrix.service == 'nest'
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/FLYARTS-QUOTIDIAN/api/dist/
+          server-dir: /public_html/FLYARTS-QUOTIDIAN/api/dist/
           local-dir: backend/dist/
 
 
