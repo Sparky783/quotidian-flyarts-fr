@@ -100,7 +100,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /public_html/FLYARTS-QUOTIDIAN/website/
-          local-dir: frontend/dist/browser/
+          local-dir: /frontend/dist/browser/
 
       - name: Deploy Nest.js to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
@@ -109,6 +109,6 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: /public_html/FLYARTS-QUOTIDIAN/api/dist/
-          local-dir: backend/dist/
+          local-dir: /backend/dist/
 
 
