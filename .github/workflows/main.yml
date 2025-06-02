@@ -22,7 +22,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
@@ -33,11 +33,17 @@ jobs:
           fi
           npm install
 
+      - name: Install Chrome dependencies for CI
+        if: matrix.service == 'frontend'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libgconf-2-4
+
       - name: Run tests
         run: |
           if [ "${{ matrix.service }}" == "angular" ]; then
             cd frontend
-            npm test
+            npm run test:ci
           else
             cd backend
             npm run test
@@ -58,7 +64,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: |
@@ -73,11 +79,25 @@ jobs:
         run: |
           if [ "${{ matrix.service }}" == "angular" ]; then
             cd frontend
-            npm run build --prod
+            npm run build
           else
             cd backend
             npm run build
           fi
+
+      - name: Archive build artifacts
+        if: matrix.service == 'angular'
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/dist/
+
+      - name: Archive build artifacts
+        if: matrix.service == 'nest'
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: backend/dist/
 
   deploy:
     runs-on: ubuntu-latest
@@ -87,24 +107,34 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Deploy Angular to FTP
-        if: matrix.service == 'angular'
-        uses: SamKirkland/FTP-Deploy-Action@4.3.4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/FLYARTS-QUOTIDIAN/website/
-          local-dir: frontend/dist/browser/
+          name: frontend-build
+          path: frontend/dist/
 
-      - name: Deploy Nest.js to FTP
-        if: matrix.service == 'nest'
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+          path: backend/dist/
+
+      - name: Deploy Angular to FTP
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: public_html/FLYARTS-QUOTIDIAN/api/dist/
+          server-dir: /public_html/FLYARTS-QUOTIDIAN/website/
+          local-dir: frontend/dist/browser/
+
+      - name: Deploy Nest.js to FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/FLYARTS-QUOTIDIAN/api/dist/
           local-dir: backend/dist/
 
 

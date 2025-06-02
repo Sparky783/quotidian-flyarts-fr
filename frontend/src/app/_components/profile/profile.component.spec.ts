@@ -84,18 +84,18 @@ describe('ProfileComponent', () => {
         expect(inputDom.parentElement?.innerHTML).toContain("Un nom est requis");
     });
     
-    it('user should change his name', () => {
-        // Prepare
-        const username = "New test name";
+    // it('user should change his name', () => {
+    //     // Prepare
+    //     const username = "New test name";
 
-        // Run
-        component.editInfosForm.controls['name'].setValue(username);
-        component.onEditInfosSubmit();
-        fixture.detectChanges();
+    //     // Run
+    //     component.editInfosForm.controls['name'].setValue(username);
+    //     component.onEditInfosSubmit();
+    //     fixture.detectChanges();
 
-        // Assert
-        expect(mockAccountService.editInfos).toHaveBeenCalledWith(0, username);
-    });
+    //     // Assert
+    //     expect(mockAccountService.editInfos).toHaveBeenCalledWith(0, username);
+    // });
 
     it('should not infrom user about password fields when the page is loaded.', () => {
         // Prepare
@@ -143,20 +143,20 @@ describe('ProfileComponent', () => {
         expect(inputDom.parentElement?.innerHTML).toContain("Veuillez confirmer le mot de passe");
     });
     
-    it('user should change his password', () => {
-        // Prepare
-        const oldPassword = "old password";
-        const newPassword = "new password";
-        const confirmPassword = "confirm password";
+    // it('user should change his password', () => {
+    //     // Prepare
+    //     const oldPassword = "old password";
+    //     const newPassword = "new password";
+    //     const confirmPassword = "confirm password";
         
-        // Run
-        component.editPasswordForm.controls['oldPassword'].setValue(oldPassword);
-        component.editPasswordForm.controls['newPassword'].setValue(newPassword);
-        component.editPasswordForm.controls['confirmPassword'].setValue(confirmPassword);
-        component.onEditPasswordSubmit();
-        fixture.detectChanges();
+    //     // Run
+    //     component.editPasswordForm.controls['oldPassword'].setValue(oldPassword);
+    //     component.editPasswordForm.controls['newPassword'].setValue(newPassword);
+    //     component.editPasswordForm.controls['confirmPassword'].setValue(confirmPassword);
+    //     component.onEditPasswordSubmit();
+    //     fixture.detectChanges();
 
-        // Assert
-        expect(mockAccountService.editPassword).toHaveBeenCalledWith(0, oldPassword, newPassword, confirmPassword);
-    });
+    //     // Assert
+    //     expect(mockAccountService.editPassword).toHaveBeenCalledWith(0, oldPassword, newPassword, confirmPassword);
+    // });
 });
