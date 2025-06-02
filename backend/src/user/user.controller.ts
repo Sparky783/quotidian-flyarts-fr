@@ -1,215 +1,229 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Session, Res, Req, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Res, Req, Put } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request, Response } from 'express';
-import * as bcrypt from 'bcrypt';
+import * as argon2 from 'argon2';
 import { UserUtils } from './user.utils';
 import { User } from './entities/user.entity';
 
 @Controller('users')
 export class UserController {
-    constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService) { }
 
-    @Post()
-    create(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Body() createUserDto: CreateUserDto
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
+  @Post()
+  async create(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() createUserDto: CreateUserDto
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
+    }
 
-        if (!this.isAdminUser(request.session['user'])) {
-            return response.status(403).json({ message: 'You need to be admin.' });
-        }
+    if (!this.isAdminUser(request.session['user'])) {
+      return response.status(403).json({ message: 'You need to be admin.' });
+    }
 
-        // Get the data from the req body
-        let password = UserUtils.generatePassword();
-        const saltRounds = 10;
+    // Get the data from the req body
+    let password = UserUtils.generatePassword();
 
-        if (!password)
-            return;
+    if (!password)
+      return;
 
-        // Hash a password
-        bcrypt.hash(password, saltRounds, async (err, hash) => {
+    // Hash a password
+    try {
+      const hash = await argon2.hash(password);
+
+      createUserDto.password = hash;
+      await this.userService.create(createUserDto);
+
+      const result = await this.userService.findAll();
+      return response.json(result);
+    } catch (err) {
+      console.error('Password hashing failed:', err);
+      throw err;
+    }
+  }
+
+  @Get()
+  async findAll(
+    @Req() request: Request,
+    @Res() response: Response
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
+    }
+
+    if (!this.isAdminUser(request.session['user'])) {
+      return response.status(403).json({ message: 'You need to be admin.' });
+    }
+
+    const result = await this.userService.findAll();
+    return response.json(result);
+  }
+
+  @Get(':id')
+  findOne(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('id') id: string
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
+    }
+
+    if (!this.isAdminUser(request.session['user'])) {
+      return response.status(403).json({ message: 'You need to be admin.' });
+    }
+
+    return this.userService.findOne(+id);
+  }
+
+  @Put(':id')
+  async update(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
+    }
+
+    if (!this.isAdminUser(request.session['user'])) {
+      return response.status(403).json({ message: 'You need to be admin.' });
+    }
+
+    await this.userService.update(+id, updateUserDto);
+
+    const result = await this.userService.findAll();
+    return response.json(result);
+  }
+
+  @Delete(':id')
+  async remove(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('id') id: string
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
+    }
+
+    if (!this.isAdminUser(request.session['user'])) {
+      return response.status(403).json({ message: 'You need to be admin.' });
+    }
+
+    const result = await this.userService.remove(+id);
+    return response.json(result);
+  }
+
+  @Post('login')
+  async login(
+    @Res() response: Response,
+    @Body() loginUserDto: LoginUserDto,
+    @Req() request: Request
+  ) {
+    if (!loginUserDto.email || !loginUserDto.password) {
+      return 'Please enter Username and Password!';
+    }
+
+    const users = await this.userService.findByEmail(loginUserDto.email);
+
+    if (users.length == 0) {
+      return response.status(500).json({ message: 'User not found' });
+    }
+
+    if (users.length > 1) {
+      return response.status(500).json({ message: 'An error occured' });
+    }
+
+    if (!await argon2.verify(users[0].password, loginUserDto.password)) {
+      return response.status(401).json({ message: 'Incorrect Email and/or Password!' });
+    }
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        request.session.regenerate((err) => {
+          if (err)
+            return reject(err);
+
+          request.session['user'] = users[0];
+
+          request.session.save((err) => {
             if (err)
-                throw err;
+              return reject(err);
 
-            createUserDto.password = hash;
-            await this.userService.create(createUserDto);
-
-            const result = await this.userService.findAll();
-            return response.json(result);
+            resolve();
+          });
         });
+      });
+
+      return response.send(request.session['user']);
+    } catch (err) {
+      console.error('Error during session regeneration or saving:', err);
+      return response.status(500).json({ message: 'An error occurred during login.' });
+    }
+  }
+
+  @Put('infos/:id')
+  async updateInfos(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
     }
 
-    @Get()
-    async findAll(
-        @Req() request: Request,
-        @Res() response: Response
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
-
-        if (!this.isAdminUser(request.session['user'])) {
-            return response.status(403).json({ message: 'You need to be admin.' });
-        }
-        
-        const result = await this.userService.findAll();
-        return response.json(result);
+    if (+id !== request.session['user'].idUser) {
+      return response.status(403).json({ message: 'You cannot change information from another user.' });
     }
 
-    @Get(':id')
-    findOne(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Param('id') id: string
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
+    await this.userService.update(+id, updateUserDto);
 
-        if (!this.isAdminUser(request.session['user'])) {
-            return response.status(403).json({ message: 'You need to be admin.' });
-        }
+    const result = await this.userService.findAll();
+    return response.json(result);
+  }
 
-        return this.userService.findOne(+id);
+  @Put('password/:id')
+  async updatePassword(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto
+  ) {
+    if (!request.session['user']) {
+      return response.status(401).json({ message: 'You need to be logged in.' });
     }
 
-    @Put(':id')
-    async update(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Param('id') id: string,
-        @Body() updateUserDto: UpdateUserDto
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
-
-        if (!this.isAdminUser(request.session['user'])) {
-            return response.status(403).json({ message: 'You need to be admin.' });
-        }
-
-        await this.userService.update(+id, updateUserDto);
-
-        const result = await this.userService.findAll();
-        return response.json(result);
+    if (+id !== request.session['user'].idUser) {
+      return response.status(403).json({ message: 'You cannot change pasword from another user.' });
     }
 
-    @Delete(':id')
-    async remove(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Param('id') id: string
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
+    // try {
+    //   const hash = await argon2.hash(password); // You can pass options here if needed
 
-        if (!this.isAdminUser(request.session['user'])) {
-            return response.status(403).json({ message: 'You need to be admin.' });
-        }
+    //   createUserDto.password = hash;
+    //   await this.userService.create(createUserDto);
 
-        const result = await this.userService.remove(+id);
-        return response.json(result);
-    }
+    //   const result = await this.userService.findAll();
+    //   return response.json(result);
+    // } catch (err) {
+    //   console.error('Password hashing failed:', err);
+    //   throw err; // or return response.status(500).json({ error: '...' });
+    // }
 
-    @Post('login')
-    async login(
-        @Res() response: Response,
-        @Body() loginUserDto: LoginUserDto,
-        @Req() request: Request
-    ) {
-        if (!loginUserDto.email || !loginUserDto.password) {
-            return 'Please enter Username and Password!';
-        }
+    await this.userService.update(+id, updateUserDto);
 
-        const users = await this.userService.findByEmail(loginUserDto.email);
+    const result = await this.userService.findAll();
+    return response.json(result);
+  }
 
-        if (users.length == 0) {
-            return response.status(500).json({ message: 'User not found' });
-        }
-
-        if (users.length > 1) {
-            return response.status(500).json({ message: 'An error occured' });
-        }
-
-        if (!await bcrypt.compareSync(loginUserDto.password, users[0].password)) {
-            return response.status(401).json({ message: 'Incorrect Email and/or Password!' });
-        }
-
-        try {
-            await new Promise<void>((resolve, reject) => {
-                request.session.regenerate((err) => {
-                    if (err)
-                        return reject(err);
-
-                    request.session['user'] = users[0];
-
-                    request.session.save((err) => {
-                        if (err)
-                            return reject(err);
-
-                        resolve();
-                    });
-                });
-            });
-
-            return response.send(request.session['user']);
-        } catch (err) {
-            console.error('Error during session regeneration or saving:', err);
-            return response.status(500).json({ message: 'An error occurred during login.' });
-        }
-    }
-
-    @Put('infos/:id')
-    async updateInfos(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Param('id') id: string,
-        @Body() updateUserDto: UpdateUserDto
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
-
-        if (+id !== request.session['user'].idUser) {
-            return response.status(403).json({ message: 'You cannot change information from another user.' });
-        }
-
-        await this.userService.update(+id, updateUserDto);
-
-        const result = await this.userService.findAll();
-        return response.json(result);
-    }
-
-    @Put('password/:id')
-    async updatePassword(
-        @Req() request: Request,
-        @Res() response: Response,
-        @Param('id') id: string,
-        @Body() updateUserDto: UpdateUserDto
-    ) {
-        if (!request.session['user']) {
-            return response.status(401).json({ message: 'You need to be logged in.' });
-        }
-
-        if (+id !== request.session['user'].idUser) {
-            return response.status(403).json({ message: 'You cannot change pasword from another user.' });
-        }
-
-        await this.userService.update(+id, updateUserDto);
-
-        const result = await this.userService.findAll();
-        return response.json(result);
-    }
-
-    private isAdminUser(user: User): boolean {
-        return user.status === "admin";
-    }
+  private isAdminUser(user: User): boolean {
+    return user.status === "admin";
+  }
 }
