@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+
 import { HomeComponent } from './_components/home/home.component';
-import { authGuard } from './_helpers/auth.guard';
 import { LoginComponent } from './_components/login/login.component';
-import { adminAuthGuard } from './_helpers/admin-auth.guard';
 import { ProfileComponent } from './_components/profile/profile.component';
 import { SiteManagerComponent } from './_components/site-manager/site-manager.component';
+
+import { authGuard } from './_helpers/auth.guard';
+import { adminAuthGuard } from './_helpers/admin-auth.guard';
 
 export const routes: Routes = [
     {
