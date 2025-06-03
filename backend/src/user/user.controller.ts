@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { Request, Response } from 'express';
-import * as argon2 from 'argon2';
+import * as bcrypt from 'bcrypt';
 import { UserUtils } from './user.utils';
 import { User } from './entities/user.entity';
 
@@ -34,7 +34,8 @@ export class UserController {
 
     // Hash a password
     try {
-      const hash = await argon2.hash(password);
+      const saltOrRounds = 10;
+      const hash = await bcrypt.hash(password, saltOrRounds);
 
       createUserDto.password = hash;
       await this.userService.create(createUserDto);
@@ -140,7 +141,7 @@ export class UserController {
       return response.status(500).json({ message: 'An error occured' });
     }
 
-    if (!await argon2.verify(users[0].password, loginUserDto.password)) {
+    if (!await bcrypt.compare(loginUserDto.password, users[0].password)) {
       return response.status(401).json({ message: 'Incorrect Email and/or Password!' });
     }
 
@@ -203,19 +204,6 @@ export class UserController {
     if (+id !== request.session['user'].idUser) {
       return response.status(403).json({ message: 'You cannot change pasword from another user.' });
     }
-
-    // try {
-    //   const hash = await argon2.hash(password); // You can pass options here if needed
-
-    //   createUserDto.password = hash;
-    //   await this.userService.create(createUserDto);
-
-    //   const result = await this.userService.findAll();
-    //   return response.json(result);
-    // } catch (err) {
-    //   console.error('Password hashing failed:', err);
-    //   throw err; // or return response.status(500).json({ error: '...' });
-    // }
 
     await this.userService.update(+id, updateUserDto);
 
