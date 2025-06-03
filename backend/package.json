@@ -7,6 +7,7 @@
     "license": "UNLICENSED",
     "scripts": {
         "build": "nest build",
+        "postbuild": "cp package.json dist/ && cp package-lock.json dist/",
         "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
         "start": "nest start",
         "start:dev": "nest start --watch",
@@ -26,7 +27,7 @@
         "@nestjs/mapped-types": "*",
         "@nestjs/platform-express": "^10.0.0",
         "@nestjs/typeorm": "^10.0.2",
-        "argon2": "^0.43.0",
+        "bcrypt": "^6.0.0",
         "connect-redis": "^7.1.1",
         "dotenv": "^16.4.5",
         "express-session": "^1.18.0",

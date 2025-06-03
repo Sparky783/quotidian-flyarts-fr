@@ -1,6 +1,5 @@
 name: Deployment
 
-# {1}
 on:
   push:
     branches: [ "master", "fix-github-action" ]
@@ -73,17 +72,16 @@ jobs:
           else
             cd backend
           fi
-          npm install
+          npm ci
 
       - name: Build project
         run: |
           if [ "${{ matrix.service }}" == "angular" ]; then
             cd frontend
-            npm run build
           else
             cd backend
-            npm run build
           fi
+            npm run build
 
       - name: Archive build artifacts
         if: matrix.service == 'angular'
