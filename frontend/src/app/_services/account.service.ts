@@ -15,7 +15,9 @@ export class AccountService {
   public user: Observable<User | null>;
 
   constructor() {
-    this.userSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('user')!));
+    const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+
+    this.userSubject = new BehaviorSubject(JSON.parse(storedUser!));
     this.user = this.userSubject.asObservable();
   }
 
@@ -115,7 +117,7 @@ export class AccountService {
     return this.http.delete(`${environment.apiUrl}/users/${id}`, { withCredentials: true })
       .pipe(map(x => {
         // Auto logout if the logged in user deleted their own record
-        if (id == this.getUserValue()?.idUser) {
+        if (id === this.getUserValue()?.idUser) {
           this.logout();
         }
         return x;
