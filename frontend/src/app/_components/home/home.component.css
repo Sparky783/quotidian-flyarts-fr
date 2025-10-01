@@ -1,20 +1,62 @@
 .btn:focus {
-    box-shadow: none!important;
+	box-shadow: none !important;
+}
+
+#google {
+	display: block;
+	width: 500px;
+	margin: 80px auto;
+	text-align: center;
 }
 
 #google a {
 	display: block;
-	width: 272px;
-	margin: 80px auto;
-	text-align: center;
+	margin-bottom: 20px;
 }
 
 #google a img {
 	display: inline-block;
 }
 
+#google .search {
+	display: flex;
+	min-height: 50px;
+	background: #898d93;
+	border: 1px solid transparent;
+	border-radius: 26px;
+	margin: 0 auto;
+}
+
+#google .search input {
+	position: relative;
+	flex: 1 1 auto;
+	background-color: transparent;
+	border: none;
+	width: 1%;
+	min-width: 0;
+	padding: 0px 20px;
+	color: #fff;
+}
+
+#google .search input::placeholder {
+	color: #dcdfe3;
+	opacity: 1;
+}
+
+#google .search input:focus,
+#google .search input:focus-visible {
+	outline: 0;
+}
+
+#google .search button {
+	background-color: transparent;
+	border: none;
+	color: #dcdfe3;
+	padding: 0 20px;
+}
+
 .fas {
-    margin-right: 10px;
+	margin-right: 10px;
 }
 
 #topList {
@@ -27,7 +69,7 @@
 
 .card-title h5 {
 	margin-top: .5rem;
-    margin-bottom: .5rem;
+	margin-bottom: .5rem;
 }
 
 .card-body {
@@ -36,8 +78,8 @@
 }
 
 .filter-text {
-    margin-left: 5px;
-    vertical-align: text-bottom;
+	margin-left: 5px;
+	vertical-align: text-bottom;
 }
 
 tr {
@@ -45,57 +87,57 @@ tr {
 }
 
 td {
-    background-color: transparent;
+	background-color: transparent;
 	vertical-align: middle
 }
 
 /* Colors */
 .row-daily {
-    background-color: #cfe2ff;
+	background-color: #cfe2ff;
 }
 
 .row-weekly {
-    background-color: #f8d7da;
+	background-color: #f8d7da;
 }
 
 .row-monthly {
-    background-color: #fff3cd;
+	background-color: #fff3cd;
 }
 
 .row-yearly {
-    background-color: #d1e7dd;
+	background-color: #d1e7dd;
 }
 
 .row-daily:hover {
-    background-color: #bfd1ec;
+	background-color: #bfd1ec;
 }
 
 .row-weekly:hover {
-    background-color: #e5c7ca;
+	background-color: #e5c7ca;
 }
 
 .row-monthly:hover {
-    background-color: #ece1be;
+	background-color: #ece1be;
 }
 
 .row-yearly:hover {
-    background-color: #c1d6cc;
+	background-color: #c1d6cc;
 }
 
 .dot-daily {
-    color: #0d6efd;
+	color: #0d6efd;
 }
 
 .dot-weekly {
-    color: #dc3545;
+	color: #dc3545;
 }
 
 .dot-monthly {
-    color: #ffc107;
+	color: #ffc107;
 }
 
 .dot-yearly {
-    color: #198754;
+	color: #198754;
 }
 
 /* Columns */
@@ -131,15 +173,13 @@ td {
 	font-size: 0.75em;
 }
 
-@media(max-width: 576px)
-{
+@media(max-width: 576px) {
 	.filter .filter-text {
 		display: none;
 	}
 }
 
-@media(max-width: 768px)
-{
+@media(max-width: 768px) {
 	.filter .fas {
 		margin-right: 0;
 	}
