@@ -12,6 +12,7 @@ export class AccountService {
   private router: Router = inject(Router);
   private http: HttpClient = inject(HttpClient);
   private userSubject: BehaviorSubject<User | null>;
+  private rememberMe: boolean = false;
   public user: Observable<User | null>;
 
   constructor() {
@@ -42,9 +43,12 @@ export class AccountService {
           user.isAdmin = user.status === "admin";
 
           // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
-          const storage = rememberMe ? localStorage : sessionStorage;
+          this.rememberMe = rememberMe;
+          const storage = this.rememberMe ? localStorage : sessionStorage;
           storage.setItem('user', JSON.stringify(user));
+
           this.userSubject.next(user);
+
           return user;
         })
       );
@@ -64,7 +68,9 @@ export class AccountService {
     return this.http.put<User>(`${environment.apiUrl}/users/infos/${id}`, name, { withCredentials: true })
       .pipe(map(user => {
         // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
-        localStorage.setItem('user', JSON.stringify(user));
+        const storage = this.rememberMe ? localStorage : sessionStorage;
+        storage.setItem('user', JSON.stringify(user));
+
         this.userSubject.next(user);
         return user;
       }));
@@ -78,8 +84,11 @@ export class AccountService {
     }, { withCredentials: true })
       .pipe(map(user => {
         // Store user details and jwt token in local storage to keep user logged in between page refreshes (developpement)
-        localStorage.setItem('user', JSON.stringify(user));
+        const storage = this.rememberMe ? localStorage : sessionStorage;
+        storage.setItem('user', JSON.stringify(user));
+
         this.userSubject.next(user);
+
         return user;
       }));
   }
@@ -103,7 +112,8 @@ export class AccountService {
         if (user.idUser === this.getUserValue()?.idUser) {
           // Update local storage
           const userData = { ...this.getUserValue(), ...user };
-          localStorage.setItem('user', JSON.stringify(userData));
+          const storage = this.rememberMe ? localStorage : sessionStorage;
+          storage.setItem('user', JSON.stringify(userData));
 
           // Publish updated user to subscribers
           this.userSubject.next(userData);
